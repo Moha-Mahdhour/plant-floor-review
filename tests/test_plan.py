@@ -80,3 +80,14 @@ class SourceBoundaryTests(unittest.TestCase):
     def test_short_tail_is_not_folded_across_a_file_boundary(self):
         chunks = plan_chunks([(100, 420)], 300, self.TWO)
         self.assertTrue(all(c["abs_end"] <= 400 or c["source"] == "b.mp4" for c in chunks), chunks)
+
+
+class DeadAirTests(unittest.TestCase):
+    def test_short_window_is_not_merged_across_a_quiet_gap(self):
+        chunks = plan_chunks([(0, 300), (1000, 1030)], 300, ONE_FILE)
+        self.assertEqual([(c["abs_start"], c["abs_end"]) for c in chunks], [(0, 300), (1000, 1030)])
+
+    def test_kept_footage_never_exceeds_the_active_windows(self):
+        windows = [(0, 300), (900, 940), (2000, 2610)]
+        kept = sum(c["duration"] for c in plan_chunks(windows, 300, ONE_FILE))
+        self.assertAlmostEqual(kept, sum(b - a for a, b in windows))

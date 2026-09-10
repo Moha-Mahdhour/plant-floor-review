@@ -97,7 +97,10 @@ def plan_chunks(windows: Sequence[Window], chunk_len: float, sources: Sequence[S
         t = seg_start
         while t < seg_end - 1.0:
             end = min(t + chunk_len, seg_end)
-            if end - t < chunk_len * 0.25 and chunks and chunks[-1]["source"] == src.name:
+            # Fold a short tail into the chunk before it, but only within the
+            # same stretch of footage. Folding the first piece of a new window
+            # would stretch the previous chunk across the quiet gap between them.
+            if end - t < chunk_len * 0.25 and t > seg_start:
                 chunks[-1]["abs_end"] = round(end, 2)
                 chunks[-1]["duration"] = round(chunks[-1]["abs_end"] - chunks[-1]["abs_start"], 2)
                 break
