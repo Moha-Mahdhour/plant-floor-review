@@ -69,20 +69,37 @@ def source_for(sources: Sequence[Source], abs_t: float) -> Source | None:
     return None
 
 
+def split_at_sources(windows: Sequence[Window], sources: Sequence[Source]) -> list[tuple[float, float, Source]]:
+    """Clip each window to the files it overlaps, so no piece crosses a file boundary.
+
+    Also drops padding that runs past the end of the recording.
+    """
+    segments = []
+    for a, b in windows:
+        for s in sources:
+            lo, hi = max(a, s.abs_start), min(b, s.abs_end)
+            if hi - lo > 1.0:
+                segments.append((lo, hi, s))
+    return segments
+
+
 def plan_chunks(windows: Sequence[Window], chunk_len: float, sources: Sequence[Source]) -> list[dict]:
-    """Cut active windows into fixed-length chunks; fold a short tail into its neighbour."""
+    """Cut active footage into fixed-length chunks; fold a short tail into its neighbour.
+
+    Every chunk lies inside a single source file. Previously a chunk was
+    assigned to the file it started in and could run past that file's end,
+    so ffmpeg cut a shorter clip than the manifest recorded and every
+    timestamp in it drifted.
+    """
     chunks: list[dict] = []
     idx = 0
-    for w_start, w_end in windows:
-        t = w_start
-        while t < w_end - 1.0:
-            end = min(t + chunk_len, w_end)
-            if end - t < chunk_len * 0.25 and chunks:
-                chunks[-1]["abs_end"] = end
-                chunks[-1]["duration"] = chunks[-1]["abs_end"] - chunks[-1]["abs_start"]
-                break
-            src = source_for(sources, t)
-            if src is None:
+    for seg_start, seg_end, src in split_at_sources(windows, sources):
+        t = seg_start
+        while t < seg_end - 1.0:
+            end = min(t + chunk_len, seg_end)
+            if end - t < chunk_len * 0.25 and chunks and chunks[-1]["source"] == src.name:
+                chunks[-1]["abs_end"] = round(end, 2)
+                chunks[-1]["duration"] = round(chunks[-1]["abs_end"] - chunks[-1]["abs_start"], 2)
                 break
             chunks.append({
                 "id": f"chunk_{idx:04d}",

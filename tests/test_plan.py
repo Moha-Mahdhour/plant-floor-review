@@ -56,3 +56,27 @@ class PlanTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SourceBoundaryTests(unittest.TestCase):
+    TWO = lay_out([("a.mp4", Path("a"), 400.0), ("b.mp4", Path("b"), 400.0)])
+
+    def test_chunk_never_spans_two_files(self):
+        chunks = plan_chunks([(300, 500)], 300, self.TWO)
+        self.assertEqual([(c["abs_start"], c["abs_end"], c["source"]) for c in chunks],
+                         [(300, 400, "a.mp4"), (400, 500, "b.mp4")])
+        self.assertEqual(chunks[1]["source_offset"], 0.0)
+
+    def test_every_chunk_fits_inside_its_file(self):
+        chunks = plan_chunks([(0, 800)], 300, self.TWO)
+        for c in chunks:
+            src = next(s for s in self.TWO if s.name == c["source"])
+            self.assertLessEqual(c["source_offset"] + c["duration"], src.duration + 1e-6, c)
+
+    def test_padding_past_the_end_of_the_recording_is_clipped(self):
+        chunks = plan_chunks([(700, 900)], 300, self.TWO)
+        self.assertEqual(chunks[-1]["abs_end"], 800)
+
+    def test_short_tail_is_not_folded_across_a_file_boundary(self):
+        chunks = plan_chunks([(100, 420)], 300, self.TWO)
+        self.assertTrue(all(c["abs_end"] <= 400 or c["source"] == "b.mp4" for c in chunks), chunks)
