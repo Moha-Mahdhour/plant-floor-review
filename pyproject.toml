@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "plant-floor-review"
+version = "0.2.0"
+description = "Turn plant-floor CCTV into a bottleneck analysis."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Al-Mahanad Al-Mahdhour" }]
+requires-python = ">=3.10"
+# Standard library only. ffmpeg/ffprobe must be on PATH for the prep step.
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[tool.setuptools.packages.find]
+include = ["plantfloor*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
