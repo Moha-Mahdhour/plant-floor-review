@@ -1,0 +1,19 @@
+{
+  "_comment": "Edit this to match your plant. Keep ids stable - every annotation and every chart keys off them. 'order' drives the flow view; put stations in process sequence.",
+  "stations": [
+    { "id": "counter",   "order": 1,  "name": "Front counter / intake",  "kind": "service" },
+    { "id": "tagging",   "order": 2,  "name": "Tagging & marking",       "kind": "prep" },
+    { "id": "sorting",   "order": 3,  "name": "Sorting & inspection",    "kind": "prep" },
+    { "id": "spotting",  "order": 4,  "name": "Spotting / stain bench",  "kind": "manual" },
+    { "id": "dryclean",  "order": 5,  "name": "Dry clean machines",      "kind": "machine" },
+    { "id": "washers",   "order": 6,  "name": "Washers",                 "kind": "machine" },
+    { "id": "dryers",    "order": 7,  "name": "Dryers / tumblers",       "kind": "machine" },
+    { "id": "press_shirt","order": 8, "name": "Shirt press unit",        "kind": "machine" },
+    { "id": "press_hand","order": 9,  "name": "Hand press / finishing",  "kind": "manual" },
+    { "id": "qc",        "order": 10, "name": "QC / final inspection",   "kind": "manual" },
+    { "id": "bagging",   "order": 11, "name": "Bagging & poly wrap",     "kind": "manual" },
+    { "id": "assembly",  "order": 12, "name": "Assembly / conveyor rack","kind": "manual" },
+    { "id": "dispatch",  "order": 13, "name": "Pickup / dispatch",       "kind": "service" },
+    { "id": "floor",     "order": 99, "name": "Shop floor (general)",    "kind": "other" }
+  ]
+}

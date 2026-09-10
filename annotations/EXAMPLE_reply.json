@@ -1,0 +1,8 @@
+{"chunk_id":"chunk_0000","coverage":"clear","staff_visible":2,
+ "counts":{"items_in":6,"items_out":4,"customers":1},
+ "events":[
+  {"t_start":2,"t_end":15,"station":"press_shirt","type":"queue_buildup","severity":3,
+   "confidence":0.8,"label":"Shirt press queue growing","cause":"press_backlog","items":9,
+   "continues_into_next":true},
+  {"t_start":0,"t_end":10,"station":"counter","type":"customer_wait","severity":2,
+   "confidence":0.3,"label":"One customer waiting","cause":"understaffed_counter"}]}

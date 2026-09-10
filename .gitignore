@@ -1,0 +1,15 @@
+# generated from your footage — never commit
+chunks/
+annotations/chunk_*.json
+annotations/_prompts/
+data/events.json
+# raw video
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.dav
+# python / os
+__pycache__/
+*.pyc
+.DS_Store

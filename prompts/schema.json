@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Laundry plant chunk annotation",
+  "type": "object",
+  "required": ["chunk_id", "events"],
+  "additionalProperties": false,
+  "properties": {
+    "chunk_id": { "type": "string" },
+    "coverage": {
+      "type": "string",
+      "enum": ["clear", "partial", "obscured", "unusable"],
+      "description": "How well this chunk could be read. 'unusable' = dark, blocked lens, corrupt."
+    },
+    "staff_visible": { "type": "integer", "minimum": 0 },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["t_start", "t_end", "station", "type", "severity", "confidence", "label"],
+        "additionalProperties": false,
+        "properties": {
+          "t_start": { "type": "number", "description": "seconds from START OF THIS CHUNK" },
+          "t_end":   { "type": "number", "description": "seconds from START OF THIS CHUNK" },
+          "station": { "type": "string", "description": "must be an id from the station list" },
+          "type": {
+            "type": "string",
+            "enum": [
+              "work", "idle", "unmanned", "queue_buildup", "blockage", "starvation",
+              "machine_stop", "changeover", "rework", "search", "transport",
+              "customer_wait", "break", "safety", "unknown"
+            ]
+          },
+          "severity":   { "type": "integer", "minimum": 1, "maximum": 5 },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "label":      { "type": "string", "maxLength": 160 },
+          "cause":      { "type": "string", "maxLength": 60,
+                          "description": "short snake_case cause, e.g. operator_split, machine_wait, no_hangers" },
+          "actors":     { "type": "integer", "minimum": 0 },
+          "items":      { "type": "integer", "minimum": 0, "description": "garments involved / queued" },
+          "continues_from_previous": { "type": "boolean" },
+          "continues_into_next":     { "type": "boolean" }
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Throughput proxies observed in this chunk.",
+      "properties": {
+        "items_in":  { "type": "integer", "minimum": 0 },
+        "items_out": { "type": "integer", "minimum": 0 },
+        "customers": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "notes": { "type": "string", "maxLength": 400 }
+  }
+}
